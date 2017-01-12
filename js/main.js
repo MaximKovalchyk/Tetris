@@ -3,21 +3,28 @@ window.addEventListener('load', function load(ev) {
 
   var body = document.body;
 
-  view = new Print2D(body, {
-    WIDTH: 640,
-    HEIGHT: 480,
-    BOX_SIZE: 16,
+  var view = new Print2D(body, {
+    WIDTH: 300,
+    HEIGHT: 400,
+    BOX_SIZE: 20,
     backgroundColor: '#eee',
-    colorMap: {
-      'wall': '#bbb',
-      'block': 'black',
-      'none': '#eee',
+    objects: {
+      'block': {
+        color: 'black'
+      },
+      'none': {
+        color: '#eee'
+      },
     }
   });
 
-  var model = new TetrisModel();
+  var model = new TetrisModel({
+    width: 15,
+    height: 20,
+    view: view
+  });
 
-  controller = new keypressController(body, model.userInput.bind(model), {
+  var controller = new keypressController(body, model.userInput.bind(model), {
     97: 'left',
     100: 'right',
     115: 'speed',

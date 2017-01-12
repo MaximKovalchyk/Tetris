@@ -12,7 +12,7 @@ Print2D.prototype.printBlock = function(color, point, blockSize) {
 };
 
 Print2D.prototype.clear = function() {
-  this.printBlock(this.backgroundColor, this.createPoint(0, 0), this.WIDTH);
+  this.printBlock(this.backgroundColor, this.createPoint(0, 0), Math.max(this.WIDTH, this.HEIGHT));
 };
 
 Print2D.prototype.convertPointToPixels = function(point) {
