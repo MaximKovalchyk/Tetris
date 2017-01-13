@@ -34,7 +34,10 @@ Print2D.prototype.printObjects = function(name, point) {
 };
 
 Print2D.prototype.youLose = function() {
-  setTimeout('alert(\'YOU LOSE!!!!!!!!\')', 0);
+  function youLose() {
+    window.alert("YOU LOSE!!!!!!!!");
+  }
+  window.setTimeout(youLose, 0);
 };
 
 Print2D.prototype.defSettings = {

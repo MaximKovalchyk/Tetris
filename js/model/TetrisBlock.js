@@ -3,11 +3,15 @@ TetrisBlock.prototype.rotate = function() {
 };
 
 TetrisBlock.prototype.SIZE = 4;
-TetrisBlock.prototype.forEachBlock = function(iIdnex, jIdnex, callback) {
-  for (var i = 0; i < this.SIZE; i++) {
-    for (var j = 0; j < this.SIZE.length; j++) {
+TetrisBlock.prototype.forEachWhileBlock = function(callback) {
+  var i, j, res;
+  for (i = 0; i < this.SIZE; i++) {
+    for (j = 0; j < this.SIZE; j++) {
       if (this.arr[i][j] === 1) {
-        callback(iIdnex + i, jIdnex + j);
+        res = callback(this.pos.x + j, this.pos.y + i);
+        if (!res) {
+          return;
+        }
       }
     }
   }
@@ -57,16 +61,18 @@ TetrisBlock.bloks = [
     [0, 0, 0, 0],
   ],
 ];
-TetrisBlock.create = function(i) {
-  return new TetrisBlock(i, TetrisBlock.bloks[i]);
+
+TetrisBlock.create = function(i, pos) {
+  return new TetrisBlock(i, pos, TetrisBlock.bloks[i]);
 };
 
-TetrisBlock.createRandom = function() {
-  var randIndex = Math.round(Math.random() * (TetrisBlock.names.length - 1));
-  return TetrisBlock.create(randIndex);
+TetrisBlock.createRandom = function(pos) {
+  var randIndex = Math.round(Math.random() * (TetrisBlock.bloks.length - 1));
+  return TetrisBlock.create(randIndex, pos);
 };
 
-function TetrisBlock(i, arr) {
+function TetrisBlock(i, pos, arr) {
   this.blockIndex = i;
   this.arr = arr;
+  this.pos = pos;
 }
