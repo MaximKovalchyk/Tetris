@@ -1,5 +1,66 @@
 TetrisModel.prototype.userInput = function(arg) {
   console.log(arg);
+  switch (arg) {
+    case 'left':
+      {
+        if (this.tetrisBlock) {
+          oldPos = this.tetrisBlock.pos;
+          newPos = {
+            x: oldPos.x - 1,
+            y: oldPos.y
+          };
+          this.field.removeBlock(this.tetrisBlock);
+          this.tetrisBlock.pos = newPos;
+          if (this.field.canPlaceBlock(this.tetrisBlock)) {
+            this.field.placeBlock(this.tetrisBlock);
+            this.print();
+          } else {
+            this.tetrisBlock.pos = oldPos;
+            this.field.placeBlock(this.tetrisBlock);
+          }
+        }
+        break;
+      }
+    case 'right':
+      {
+        if (this.tetrisBlock) {
+          oldPos = this.tetrisBlock.pos;
+          newPos = {
+            x: oldPos.x + 1,
+            y: oldPos.y
+          };
+          this.field.removeBlock(this.tetrisBlock);
+          this.tetrisBlock.pos = newPos;
+          if (this.field.canPlaceBlock(this.tetrisBlock)) {
+            this.field.placeBlock(this.tetrisBlock);
+            this.print();
+          } else {
+            this.tetrisBlock.pos = oldPos;
+            this.field.placeBlock(this.tetrisBlock);
+          }
+        }
+        break;
+      }
+    case 'speed':
+      {
+        this.gameMove();
+        break;
+      }
+    case 'turn':
+      if (this.tetrisBlock) {
+        oldBlock = this.tetrisBlock;
+        newBlock = this.tetrisBlock.rotate();
+
+        this.field.removeBlock(oldBlock);
+        if (this.field.canPlaceBlock(newBlock)) {
+          this.tetrisBlock = newBlock;
+          this.field.placeBlock(newBlock);
+          this.print();
+        }
+        this.field.placeBlock(this.tetrisBlock);
+      }
+      break;
+  }
 };
 
 TetrisModel.prototype.print = function() {
@@ -59,6 +120,4 @@ function TetrisModel(args) {
   this.field = new TetrisField(args.width, args.height);
   this.gameMoveCycle = this.startCicle(this.gameMove.bind(this), this.SPEED);
   this.gameMoveCycle.start();
-  // this.field.setCellValue(0, 19, 1);
-  // this.print();
 }

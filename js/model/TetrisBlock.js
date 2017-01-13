@@ -1,5 +1,12 @@
 TetrisBlock.prototype.rotate = function() {
-
+  var i, j, res = [];
+  for (i = 0; i < this.SIZE; i++) {
+    res.push([]);
+    for (j = 0; j < this.SIZE; j++) {
+      res[i][j] = this.arr[this.SIZE - i - 1][j];
+    }
+  }
+  return new TetrisBlock(this.i, this.pos, res);
 };
 
 TetrisBlock.prototype.SIZE = 4;
