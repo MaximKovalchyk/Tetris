@@ -27,7 +27,7 @@ window.addEventListener('load', function load(ev) {
   var controller = new keypressController(body, model.userInput.bind(model), {
     97: 'left',
     100: 'right',
-    115: 'speed',
+    115: 'down',
     32: 'turn'
   });
 });

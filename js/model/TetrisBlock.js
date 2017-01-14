@@ -1,12 +1,70 @@
-TetrisBlock.prototype.rotate = function() {
+TetrisBlock.prototype.removeTopLine = function() {
+  var line = this.arr.shift();
+  this.arr.push(line);
+};
+
+TetrisBlock.prototype.removeLeftColumn = function() {
+  for (var i = 0, val; i < this.SIZE; i++) {
+    val = this.arr[i].shift();
+    this.arr[i].push(val);
+  }
+};
+
+TetrisBlock.prototype.isFreeFirstLine = function() {
+  var i, res = 0;
+  for (i = 0; i < this.SIZE; i++) {
+    res += this.arr[0][i];
+  }
+  return !res;
+};
+
+TetrisBlock.prototype.isFreeFirstColumn = function() {
+  var i, res = 0;
+  for (i = 0; i < this.SIZE; i++) {
+    res += this.arr[i][0];
+  }
+  return !res;
+};
+
+TetrisBlock.prototype.turn = function() {
   var i, j, res = [];
   for (i = 0; i < this.SIZE; i++) {
     res.push([]);
     for (j = 0; j < this.SIZE; j++) {
-      res[i][j] = this.arr[this.SIZE - i - 1][j];
+      res[i][j] = this.arr[this.SIZE - j - 1][i];
     }
   }
-  return new TetrisBlock(this.i, this.pos, res);
+  res = new TetrisBlock(this.i, this.pos, res);
+  //remove free lines
+  while (res.isFreeFirstLine()) {
+    res.removeTopLine();
+  }
+  while (res.isFreeFirstColumn()) {
+    res.removeLeftColumn();
+  }
+
+  return res;
+};
+
+TetrisBlock.prototype.right = function() {
+  return new TetrisBlock(this.i, {
+    x: this.pos.x + 1,
+    y: this.pos.y
+  }, this.arr);
+};
+
+TetrisBlock.prototype.left = function() {
+  return new TetrisBlock(this.i, {
+    x: this.pos.x - 1,
+    y: this.pos.y
+  }, this.arr);
+};
+
+TetrisBlock.prototype.down = function() {
+  return new TetrisBlock(this.i, {
+    x: this.pos.x,
+    y: this.pos.y + 1
+  }, this.arr);
 };
 
 TetrisBlock.prototype.SIZE = 4;

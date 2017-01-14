@@ -1,6 +1,35 @@
 TetrisField.prototype.FREE_CELL = 0;
 TetrisField.prototype.BLOCK_CELL = 1;
 
+TetrisField.prototype.isItFullLine = function(y) {
+  for (var x = 0; x < this.width; x++) {
+    if (!this.getCellValue(x, y)) {
+      return false;
+    }
+  }
+  return true;
+};
+
+TetrisField.prototype.delLine = function(y) {
+  for (var x = 0; x < this.width; x++) {
+    this.field[x].splice(y, 1);
+    this.field[x].unshift(0);
+  }
+};
+
+TetrisField.prototype.burnLines = function(tetrisBlock) {
+  var y = tetrisBlock.pos.y,
+    len = tetrisBlock.pos.y + tetrisBlock.SIZE,
+    count = 0;
+  for (; y < len && y < this.height; y++) {
+    if (this.isItFullLine(y)) {
+      this.delLine(y);
+      count++;
+    }
+  }
+  return count;
+};
+
 TetrisField.prototype.generateField = function() {
   var i, j, res = [];
   for (i = 0; i < this.width; i++) {

@@ -1,65 +1,20 @@
 TetrisModel.prototype.userInput = function(arg) {
   console.log(arg);
-  switch (arg) {
-    case 'left':
-      {
-        if (this.tetrisBlock) {
-          oldPos = this.tetrisBlock.pos;
-          newPos = {
-            x: oldPos.x - 1,
-            y: oldPos.y
-          };
-          this.field.removeBlock(this.tetrisBlock);
-          this.tetrisBlock.pos = newPos;
-          if (this.field.canPlaceBlock(this.tetrisBlock)) {
-            this.field.placeBlock(this.tetrisBlock);
-            this.print();
-          } else {
-            this.tetrisBlock.pos = oldPos;
-            this.field.placeBlock(this.tetrisBlock);
-          }
-        }
-        break;
-      }
-    case 'right':
-      {
-        if (this.tetrisBlock) {
-          oldPos = this.tetrisBlock.pos;
-          newPos = {
-            x: oldPos.x + 1,
-            y: oldPos.y
-          };
-          this.field.removeBlock(this.tetrisBlock);
-          this.tetrisBlock.pos = newPos;
-          if (this.field.canPlaceBlock(this.tetrisBlock)) {
-            this.field.placeBlock(this.tetrisBlock);
-            this.print();
-          } else {
-            this.tetrisBlock.pos = oldPos;
-            this.field.placeBlock(this.tetrisBlock);
-          }
-        }
-        break;
-      }
-    case 'speed':
-      {
-        this.gameMove();
-        break;
-      }
-    case 'turn':
-      if (this.tetrisBlock) {
-        oldBlock = this.tetrisBlock;
-        newBlock = this.tetrisBlock.rotate();
+  this.moveBlock(arg);
+};
 
-        this.field.removeBlock(oldBlock);
-        if (this.field.canPlaceBlock(newBlock)) {
-          this.tetrisBlock = newBlock;
-          this.field.placeBlock(newBlock);
-          this.print();
-        }
-        this.field.placeBlock(this.tetrisBlock);
-      }
-      break;
+TetrisModel.prototype.moveBlock = function(moveName) {
+  if (this.tetrisBlock) {
+    oldBlock = this.tetrisBlock;
+    newBlock = this.tetrisBlock[moveName]();
+
+    this.field.removeBlock(oldBlock);
+    if (this.field.canPlaceBlock(newBlock)) {
+      this.tetrisBlock = newBlock;
+      this.field.placeBlock(newBlock);
+      this.print();
+    }
+    this.field.placeBlock(this.tetrisBlock);
   }
 };
 
@@ -71,6 +26,7 @@ TetrisModel.prototype.print = function() {
       this.view.printObjects(objName, this.view.createPoint(i, j));
     }
   }
+  console.log('score: ' + this.score);
 };
 
 TetrisModel.prototype.startCicle = function(fn, framePerSeconds) {
@@ -95,12 +51,14 @@ TetrisModel.prototype.gameMove = function() {
     } else {
       this.tetrisBlock.pos = oldPos;
       this.field.placeBlock(this.tetrisBlock);
+      //check score upgrade
+      this.score += this.field.burnLines(this.tetrisBlock);
       this.tetrisBlock = null;
     }
   } else {
     //if game field can place block - create
     tetrisBlock = TetrisBlock.createRandom({
-      x: 0,
+      x: Math.floor(this.field.width / 2),
       y: 0
     });
     if (this.field.canPlaceBlock(tetrisBlock)) {
@@ -115,8 +73,9 @@ TetrisModel.prototype.gameMove = function() {
 
 function TetrisModel(args) {
   this.view = args.view;
-  this.SPEED = args.SPEED || 5;
+  this.SPEED = args.SPEED || 2;
   this.tetrisBlock = null;
+  this.score = 0;
   this.field = new TetrisField(args.width, args.height);
   this.gameMoveCycle = this.startCicle(this.gameMove.bind(this), this.SPEED);
   this.gameMoveCycle.start();
