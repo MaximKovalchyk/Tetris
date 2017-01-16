@@ -1,8 +1,3 @@
-TetrisModel.prototype.userInput = function(arg) {
-  console.log(arg);
-  this.moveBlock(arg);
-};
-
 TetrisModel.prototype.moveBlock = function(moveName) {
   if (this.tetrisBlock) {
     oldBlock = this.tetrisBlock;
@@ -13,9 +8,11 @@ TetrisModel.prototype.moveBlock = function(moveName) {
       this.tetrisBlock = newBlock;
       this.field.placeBlock(newBlock);
       this.print();
+      return true;
     }
     this.field.placeBlock(this.tetrisBlock);
   }
+  return false;
 };
 
 TetrisModel.prototype.print = function() {
@@ -26,33 +23,20 @@ TetrisModel.prototype.print = function() {
       this.view.printObjects(objName, this.view.createPoint(i, j));
     }
   }
-  console.log('score: ' + this.score);
 };
 
-TetrisModel.prototype.startCicle = function(fn, framePerSeconds) {
-  var timerTime = 1000 / framePerSeconds;
-  return new AsyncCycle(fn, timerTime);
+TetrisModel.prototype.startCicle = function(fn) {
+  return new AsyncCycle(fn, 1000 / this.SPEED);
 };
 
 TetrisModel.prototype.gameMove = function() {
-  var tetrisBlock, oldPos, newPos;
+  var tetrisBlock, score;
   if (this.tetrisBlock) {
     //if can move block - move
     //else add tetrisBlock on next move
-    oldPos = this.tetrisBlock.pos;
-    newPos = {
-      x: oldPos.x,
-      y: oldPos.y + 1
-    };
-    this.field.removeBlock(this.tetrisBlock);
-    this.tetrisBlock.pos = newPos;
-    if (this.field.canPlaceBlock(this.tetrisBlock)) {
-      this.field.placeBlock(this.tetrisBlock);
-    } else {
-      this.tetrisBlock.pos = oldPos;
-      this.field.placeBlock(this.tetrisBlock);
-      //check score upgrade
-      this.score += this.field.burnLines(this.tetrisBlock);
+    if (!this.moveBlock('down')) {
+      score = this.field.burnLines(this.tetrisBlock);
+      this.updateScore(score);
       this.tetrisBlock = null;
     }
   } else {
@@ -71,12 +55,27 @@ TetrisModel.prototype.gameMove = function() {
   this.print();
 };
 
+TetrisModel.prototype.updateScore = function(scoreDif) {
+  if (scoreDif > 0) {
+    this.score += scoreDif;
+    this.view.printScore(this.score);
+    this.SPEED = Math.floor(this.score / 5) + 1;
+    this.gameMoveCycle.time = 1000 / this.SPEED;
+  }
+};
+
+TetrisModel.prototype.gameOver = function() {
+  this.view.youLose(this.score);
+  this.gameMoveCycle.stop();
+};
+
 function TetrisModel(args) {
   this.view = args.view;
-  this.SPEED = args.SPEED || 2;
+  this.SPEED = args.SPEED || 1;
   this.tetrisBlock = null;
   this.score = 0;
   this.field = new TetrisField(args.width, args.height);
-  this.gameMoveCycle = this.startCicle(this.gameMove.bind(this), this.SPEED);
+  this.gameMoveCycle = this.startCicle(this.gameMove.bind(this));
   this.gameMoveCycle.start();
+  this.view.printScore(this.score);
 }

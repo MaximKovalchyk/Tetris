@@ -1,13 +1,22 @@
 AsyncCycle = function(fn, time) {
+  this.go = false;
   this.fn = fn;
   this.time = time;
 };
 
-AsyncCycle.prototype.start = function() {
+AsyncCycle.prototype._iteration = function() {
   this.fn();
-  this.id = setTimeout(this.start.bind(this), this.time);
+  if (this.go) {
+    this.id = setTimeout(this._iteration.bind(this), this.time);
+  }
+};
+
+AsyncCycle.prototype.start = function() {
+  this.go = true;
+  this._iteration();
 };
 
 AsyncCycle.prototype.stop = function() {
+  this.go = false;
   clearTimeout(this.id);
 };

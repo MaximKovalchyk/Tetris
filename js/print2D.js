@@ -33,13 +33,6 @@ Print2D.prototype.printObjects = function(name, point) {
   this.printBlock(this.objects[name].color, point);
 };
 
-Print2D.prototype.youLose = function() {
-  function youLose() {
-    window.alert("YOU LOSE!!!!!!!!");
-  }
-  window.setTimeout(youLose, 0);
-};
-
 Print2D.prototype.defSettings = {
   BOX_SIZE: 16,
   WIDTH: 640,

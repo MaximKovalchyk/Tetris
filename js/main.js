@@ -2,6 +2,8 @@ window.addEventListener('load', function load(ev) {
   window.removeEventListener('load', load);
 
   var body = document.body;
+  var scoreDiv = document.createElement('div');
+  body.appendChild(scoreDiv);
 
   var view = new Print2D(body, {
     WIDTH: 300,
@@ -18,13 +20,24 @@ window.addEventListener('load', function load(ev) {
     }
   });
 
+  view.printScore = function(score) {
+    scoreDiv.innerText = 'Score: ' + score;
+  };
+
+  view.youLose = function(score) {
+    function youLose() {
+      window.alert("YOU LOSE! Score: " + score);
+    }
+    window.setTimeout(youLose, 0);
+  };
+
   var model = new TetrisModel({
     width: 15,
     height: 20,
     view: view
   });
 
-  var controller = new keypressController(body, model.userInput.bind(model), {
+  var controller = new keypressController(body, model.moveBlock.bind(model), {
     97: 'left',
     100: 'right',
     115: 'down',
