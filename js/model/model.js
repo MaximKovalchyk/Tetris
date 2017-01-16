@@ -1,3 +1,11 @@
+TetrisModel.prototype.dispatch = function(dispatch) {
+  if (dispatch === 'pause') {
+    this.pause = !this.pause;
+  } else if (!this.pause) {
+    this.moveBlock(dispatch);
+  }
+};
+
 TetrisModel.prototype.moveBlock = function(moveName) {
   if (this.tetrisBlock) {
     oldBlock = this.tetrisBlock;
@@ -31,28 +39,30 @@ TetrisModel.prototype.startCicle = function(fn) {
 
 TetrisModel.prototype.gameMove = function() {
   var tetrisBlock, score;
-  if (this.tetrisBlock) {
-    //if can move block - move
-    //else add tetrisBlock on next move
-    if (!this.moveBlock('down')) {
-      score = this.field.burnLines(this.tetrisBlock);
-      this.updateScore(score);
-      this.tetrisBlock = null;
-    }
-  } else {
-    //if game field can place block - create
-    tetrisBlock = TetrisBlock.createRandom({
-      x: Math.floor(this.field.width / 2),
-      y: 0
-    });
-    if (this.field.canPlaceBlock(tetrisBlock)) {
-      this.tetrisBlock = tetrisBlock;
-      this.field.placeBlock(this.tetrisBlock);
+  if (!this.pause) {
+    if (this.tetrisBlock) {
+      //if can move block - move
+      //else add tetrisBlock on next move
+      if (!this.moveBlock('down')) {
+        score = this.field.burnLines(this.tetrisBlock);
+        this.updateScore(score);
+        this.tetrisBlock = null;
+      }
     } else {
-      this.gameOver();
+      //if game field can place block - create
+      tetrisBlock = TetrisBlock.createRandom({
+        x: Math.floor(this.field.width / 2),
+        y: 0
+      });
+      if (this.field.canPlaceBlock(tetrisBlock)) {
+        this.tetrisBlock = tetrisBlock;
+        this.field.placeBlock(this.tetrisBlock);
+      } else {
+        this.gameOver();
+      }
     }
+    this.print();
   }
-  this.print();
 };
 
 TetrisModel.prototype.updateScore = function(scoreDif) {
@@ -71,6 +81,7 @@ TetrisModel.prototype.gameOver = function() {
 
 function TetrisModel(args) {
   this.view = args.view;
+  this.pause = false;
   this.SPEED = args.SPEED || 1;
   this.tetrisBlock = null;
   this.score = 0;

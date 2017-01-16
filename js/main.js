@@ -37,10 +37,12 @@ window.addEventListener('load', function load(ev) {
     view: view
   });
 
-  var controller = new keypressController(body, model.moveBlock.bind(model), {
+  var controller = new keypressController(body, model.dispatch.bind(model), {
     97: 'left',
     100: 'right',
     115: 'down',
-    32: 'turn'
+    32: 'turn',
+    116: 'turn',
+    112: 'pause'
   });
 });
