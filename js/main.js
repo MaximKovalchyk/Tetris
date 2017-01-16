@@ -25,10 +25,31 @@ window.addEventListener('load', function load(ev) {
   };
 
   view.youLose = function(score) {
-    function youLose() {
-      window.alert("YOU LOSE! Score: " + score);
+    var index,
+      message = "Game over! Your score: " + score,
+      results = [];
+
+    if (window.localStorage && window.localStorage.results) {
+      results = JSON.parse(window.localStorage.results);
     }
-    window.setTimeout(youLose, 0);
+
+    index = results.findIndex(function(el) {
+      return el === score;
+    });
+    if (index === -1) {
+      results.push(score);
+    }
+
+    results.sort().reverse().splice(10);
+
+    message = "Game over! Your scores:\n" + results.join('\n');
+
+    if (window.localStorage) {
+      window.localStorage.results = JSON.stringify(results);
+    }
+
+
+    window.setTimeout(alert.bind(window, message), 0);
   };
 
   var model = new TetrisModel({
